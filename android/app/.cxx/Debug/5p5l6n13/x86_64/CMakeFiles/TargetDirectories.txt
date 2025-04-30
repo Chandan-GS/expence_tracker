@@ -1,0 +1,2 @@
+/Users/chandangs/Documents/Flutter_projects/expence_tracker/android/app/.cxx/Debug/5p5l6n13/x86_64/CMakeFiles/edit_cache.dir
+/Users/chandangs/Documents/Flutter_projects/expence_tracker/android/app/.cxx/Debug/5p5l6n13/x86_64/CMakeFiles/rebuild_cache.dir
