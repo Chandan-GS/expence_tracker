@@ -31,7 +31,7 @@ class ExpenceListWidget extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  '\$ ${expences.amount.toStringAsFixed(2)}',
+                  '₹ ${expences.amount.toStringAsFixed(2)}',
                   style: TextStyle(
                     color: Theme.of(context).textTheme.titleMedium?.color,
                     fontSize: 14,

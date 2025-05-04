@@ -90,19 +90,23 @@ class Chart extends StatelessWidget {
 
   // Define colors for each category
   static final Map<Category, Color> categoryColors = {
-    Category.Food: const Color.fromARGB(255, 164, 195, 98),
-    Category.Work: const Color.fromARGB(255, 156, 156, 150),
-    Category.Travel: const Color.fromARGB(255, 255, 115, 118),
-    Category.Leisure: const Color.fromARGB(255, 255, 168, 82),
+    Category.Food: const Color.fromARGB(255, 75, 192, 192), // Teal
+    Category.Work: const Color.fromARGB(255, 163, 130, 207), // Purple
+    Category.Travel: const Color.fromARGB(255, 255, 99, 132), // Pink
+    Category.Leisure: const Color.fromARGB(255, 255, 159, 64), // Orange
+    Category.Utilities: const Color.fromARGB(255, 54, 162, 235), // Blue
+    Category.Health: const Color.fromARGB(255, 220, 20, 160), // Magenta
+    Category.Shopping: const Color.fromARGB(255, 255, 205, 86), // Yellow
+    Category.Education: const Color.fromARGB(255, 106, 27, 154), // Deep Purple
+    Category.Entertainment: const Color.fromARGB(255, 239, 83, 27), // Coral
+    Category.Miscellaneous:
+        const Color.fromARGB(255, 96, 125, 139), // Blue Gray
   };
 
   List<ExpenceBucketCategory> get buckets {
-    return [
-      ExpenceBucketCategory.forCategory(expenses, Category.Food),
-      ExpenceBucketCategory.forCategory(expenses, Category.Leisure),
-      ExpenceBucketCategory.forCategory(expenses, Category.Travel),
-      ExpenceBucketCategory.forCategory(expenses, Category.Work),
-    ];
+    return Category.values.map((category) {
+      return ExpenceBucketCategory.forCategory(expenses, category);
+    }).toList();
   }
 
   double get totalExpenses {
@@ -117,32 +121,29 @@ class Chart extends StatelessWidget {
     return buckets.map((bucket) {
       final value = bucket.getTotalExpence();
       return PieChartSectionData(
-        color: categoryColors[bucket.category],
-        value: value,
-        title: '${(value / totalExpenses * 100).toStringAsFixed(1)}%',
-        radius: 40,
-        titleStyle: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-        ),
-      );
+          showTitle: false,
+          color: categoryColors[bucket.category],
+          value: value,
+          radius: 40,
+          borderSide: BorderSide(color: Colors.black, width: 1.2));
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+      padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
       child: Container(
         padding: const EdgeInsets.all(10),
         width: double.infinity,
-        height: 250,
+        height: 300,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        child: Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: PieChart(
@@ -155,41 +156,24 @@ class Chart extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(width: 20),
             SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                iconData(
-                    context,
-                    Icon(
-                      Icons.lunch_dining,
-                      color: const Color.fromARGB(255, 164, 195, 98),
-                    ),
-                    "Food"),
-                iconData(
-                    context,
-                    Icon(
-                      Icons.work,
-                      color: const Color.fromARGB(255, 156, 156, 150),
-                    ),
-                    "Work"),
-                iconData(
-                    context,
-                    Icon(
-                      Icons.flight_takeoff,
-                      color: const Color.fromARGB(255, 255, 115, 118),
-                    ),
-                    "Travel"),
-                iconData(
-                    context,
-                    Icon(
-                      Icons.movie,
-                      color: const Color.fromARGB(255, 255, 168, 82),
-                    ),
-                    "Leisure"),
-              ],
+              height: 225,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: Category.values.map((category) {
+                    return iconData(
+                      context,
+                      Icon(
+                        categoryIcons[category],
+                        color: categoryColors[category],
+                      ),
+                      category.name,
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           ],
         ),
@@ -201,16 +185,23 @@ class Chart extends StatelessWidget {
 Widget iconData(BuildContext context, Icon icon, String label) {
   return Column(
     children: [
-      icon,
+      Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          icon,
+          SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: Theme.of(context).textTheme.titleMedium?.color,
+            ),
+          ),
+        ],
+      ),
       SizedBox(
-        height: 2,
-      ),
-      Text(
-        label,
-        style: TextStyle(
-            fontSize: 11,
-            color: Theme.of(context).textTheme.titleMedium?.color),
-      ),
+        height: 7,
+      )
     ],
   );
 }

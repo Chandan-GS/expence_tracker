@@ -1,9 +1,11 @@
+import 'package:expence_tracker/database_service.dart';
 import 'package:expence_tracker/expence_list.dart';
 import 'package:expence_tracker/models/expence_data.dart';
 import 'package:expence_tracker/models/side_bar.dart';
 import 'package:expence_tracker/pages/bottom_sheet.dart';
 import 'package:expence_tracker/pages/charts.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Expences extends StatefulWidget {
   const Expences({
@@ -87,33 +89,71 @@ class _ExpencesState extends State<Expences> {
     });
   }
 
-  void removeExpence(ExpenceData expence) {
+  @override
+  void initState() {
+    super.initState();
+    _loadExpenses();
+  }
+
+  Future<void> _loadExpenses() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id');
+    if (userId != null) {
+      final expenses = await DatabaseService.instance.getUserExpenses(userId);
+      setState(() {
+        expenceList = expenses;
+      });
+    }
+  }
+
+  void removeExpence(ExpenceData expence) async {
     final i = expenceList.indexOf(expence);
     final getTitle = expence.title;
-    setState(() {
-      expenceList.remove(expence);
-    });
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: Theme.of(context).focusColor,
-        action: SnackBarAction(
-            textColor: Theme.of(context).cardColor,
-            label: "Undo",
-            onPressed: () {
-              setState(() {
-                expenceList.insert(i, expence);
-              });
-            }),
-        duration: Duration(seconds: 3),
-        content: Text(
-          "\"$getTitle\"  deleted",
-          style: TextStyle(
-            color: Theme.of(context).cardColor,
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('user_id');
+
+      if (userId != null) {
+        await DatabaseService.instance.deleteExpense(expence.id);
+
+        setState(() {
+          expenceList.remove(expence);
+        });
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("\"$getTitle\" deleted"),
+            action: SnackBarAction(
+              label: "Undo",
+              onPressed: () async {
+                try {
+                  await DatabaseService.instance.addExpense(userId, expence);
+                  setState(() {
+                    expenceList.insert(i, expence);
+                  });
+                } catch (e) {
+                  debugPrint('Error undoing delete: $e');
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error restoring expense')),
+                  );
+                }
+              },
+            ),
           ),
-        ),
-      ),
-    );
+        );
+      }
+    } catch (e) {
+      debugPrint('Error removing expense: $e');
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting expense')),
+      );
+    }
   }
 
   String currentScreen = "expences";
@@ -182,11 +222,7 @@ class _ExpencesState extends State<Expences> {
             child: IconButton(
               onPressed: () {
                 showModalBottomSheet(
-                  elevation: 10,
-                  isDismissible: true,
                   isScrollControlled: true,
-                  sheetAnimationStyle:
-                      AnimationStyle(duration: Duration(milliseconds: 400)),
                   context: context,
                   builder: (cnt) =>
                       BottomSheetWidget(onaddExpences: addExpence),

@@ -1,5 +1,6 @@
 import 'package:expence_tracker/expence_list_widget.dart';
 import 'package:expence_tracker/models/expence_data.dart';
+import 'database_service.dart';
 import 'package:flutter/material.dart';
 
 class ExpenceList extends StatelessWidget {
@@ -14,6 +15,7 @@ class ExpenceList extends StatelessWidget {
     return ListView.builder(
       itemCount: expence.length,
       itemBuilder: (cxt, index) => Dismissible(
+        direction: DismissDirection.endToStart,
         key: ValueKey(expence[index]),
         background: Padding(
           padding: EdgeInsets.symmetric(vertical: 7),
@@ -31,10 +33,17 @@ class ExpenceList extends StatelessWidget {
             ),
           ),
         ),
-        direction: DismissDirection.endToStart,
-        onDismissed: (direction) {
-          final removedItem = expence[index];
-          onRemoveExpence(removedItem);
+        onDismissed: (direction) async {
+          try {
+            final removedItem = expence[index];
+            debugPrint('Deleting expense with ID: ${removedItem.id}');
+            onRemoveExpence(removedItem);
+          } catch (e) {
+            debugPrint('Error in dismissible: $e');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error deleting expense')),
+            );
+          }
         },
         child: ExpenceListWidget(expences: expence[index]),
       ),

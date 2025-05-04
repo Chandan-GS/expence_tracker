@@ -1,5 +1,7 @@
+import 'package:expence_tracker/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:expence_tracker/models/expence_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomSheetWidget extends StatefulWidget {
   const BottomSheetWidget({super.key, required this.onaddExpences});
@@ -23,6 +25,46 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
     super.dispose();
   }
 
+  void _submitExpenseData() async {
+    final _amount = double.tryParse(_textEditingAmount.text);
+    if (_textEditingTitle.text.trim().isEmpty ||
+        _amount == null ||
+        _amount <= 0 ||
+        selectedDate == null) {
+      showDialog(
+        context: context,
+        builder: (cxt) => AlertDialog(
+          content: Text(
+              "Please make sure a valid date, title and amount were entered."),
+          title: Text("Invalid input"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(cxt),
+              child: Text("Okay"),
+            )
+          ],
+        ),
+      );
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id');
+    if (userId != null) {
+      final expense = ExpenceData(
+        title: _textEditingTitle.text,
+        amount: _amount,
+        category: _selectedCategory,
+        date: selectedDate!,
+      );
+
+      await DatabaseService.instance.addExpense(userId, expense);
+      widget.onaddExpences(expense);
+    }
+
+    Navigator.pop(context);
+  }
+
   void _showDate() async {
     final pickedDate = await showDatePicker(
         initialDate: DateTime.now(),
@@ -37,42 +79,6 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   }
 
   void _cancel() {
-    Navigator.pop(context);
-  }
-
-  void _submitExpenseData() {
-    final _amount = double.tryParse(_textEditingAmount.text);
-    if (_textEditingTitle.text.trim().isEmpty ||
-        _amount == null ||
-        _amount <= 0) {
-      setState(
-        () {
-          showDialog(
-            context: context,
-            builder: (cxt) => AlertDialog(
-              backgroundColor: Theme.of(context).cardColor,
-              content: Text(
-                  "Plese make sure a valid date, title and category were entered."),
-              title: Text("Invalid input"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(cxt);
-                  },
-                  child: Text(
-                    "Okay",
-                    style: TextStyle(
-                        color: Theme.of(context).textTheme.titleMedium?.color),
-                  ),
-                )
-              ],
-            ),
-          );
-        },
-      );
-      return;
-    }
-    widget.onaddExpences(addExpence(_amount));
     Navigator.pop(context);
   }
 
@@ -96,7 +102,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       width: 600,
-      height: double.infinity,
+      height: 700,
       padding: EdgeInsets.fromLTRB(30, 30, 30, 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,39 +166,38 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
           SizedBox(
             height: 50,
           ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              width: 120,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 0.3),
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(5)),
-              child: DropdownButton(
-                  menuMaxHeight: 150,
-                  iconSize: 30,
-                  iconEnabledColor: Theme.of(context).focusColor,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  value: _selectedCategory,
-                  dropdownColor: Theme.of(context).cardColor,
-                  items: Category.values.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(
-                        category.name,
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value == null) {
-                      return;
-                    }
-                    setState(() {
-                      _selectedCategory = value;
-                    });
-                  }),
+          Text(
+            "Category",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
+          ),
+          SizedBox(height: 10),
+          Wrap(
+            spacing: 10,
+            children: Category.values.map((category) {
+              final isSelected = _selectedCategory == category;
+              return ChoiceChip(
+                showCheckmark: false,
+                checkmarkColor: Colors.white,
+                label: Text(category.name),
+                selected: isSelected,
+                onSelected: (selected) {
+                  setState(() {
+                    _selectedCategory = category;
+                  });
+                },
+                selectedColor: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).cardColor,
+                labelStyle: TextStyle(
+                  color: isSelected
+                      ? Colors.white
+                      : Theme.of(context).textTheme.bodyMedium?.color,
+                ),
+              );
+            }).toList(),
           ),
           SizedBox(
             height: 30,

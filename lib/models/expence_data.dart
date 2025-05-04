@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:uuid/uuid.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -7,25 +9,38 @@ const uuid = Uuid();
 
 enum Category {
   Food,
-  Travel,
   Work,
   Leisure,
+  Travel,
+  Utilities,
+  Health,
+  Shopping,
+  Education,
+  Entertainment,
+  Miscellaneous,
 }
 
-const categoryIcons = {
-  Category.Travel: Icons.flight_takeoff_rounded,
-  Category.Food: Icons.lunch_dining,
+const Map<Category, IconData> categoryIcons = {
+  Category.Food: Icons.fastfood,
   Category.Work: Icons.work,
-  Category.Leisure: Icons.movie,
+  Category.Travel: Icons.flight,
+  Category.Leisure: Icons.sports_esports,
+  Category.Utilities: Icons.lightbulb,
+  Category.Health: Icons.local_hospital,
+  Category.Shopping: Icons.shopping_cart,
+  Category.Education: Icons.school,
+  Category.Entertainment: Icons.movie,
+  Category.Miscellaneous: Icons.more_horiz,
 };
 
 class ExpenceData {
   ExpenceData({
+    String? id,
     required this.title,
     required this.amount,
     required this.category,
     required this.date,
-  }) : id = uuid.v4();
+  }) : id = id ?? const Uuid().v4();
 
   final String id;
   final String title;
