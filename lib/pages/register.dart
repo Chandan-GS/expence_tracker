@@ -1,5 +1,6 @@
 import 'package:expence_tracker/pages/expences.dart';
 import 'package:expence_tracker/database_service.dart';
+import 'package:expence_tracker/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -86,7 +87,16 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: const Text(
+          'Sign Up',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => LoginPage()));
+            },
+            icon: Icon(Icons.arrow_back)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -95,6 +105,9 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              SizedBox(
+                height: 30,
+              ),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
@@ -108,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
               TextFormField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -127,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
               TextFormField(
                 controller: _passwordController,
                 decoration: const InputDecoration(
@@ -145,7 +158,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
               TextFormField(
                 controller: _confirmPasswordController,
                 decoration: const InputDecoration(
@@ -163,17 +176,33 @@ class _RegisterPageState extends State<RegisterPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 40),
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _handleSignup,
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(double.infinity, 50),
+                    side: BorderSide(color: Colors.black),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // No rounded corners
+                    ),
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .primary, // Background color
+                  ),
+                  onPressed: () {
+                    _handleSignup();
+                  },
                   child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text(
-                          'Sign Up',
-                          style: TextStyle(fontSize: 16),
+                      ? CircularProgressIndicator()
+                      : Text(
+                          "Sign Up",
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary),
                         ),
                 ),
               ),

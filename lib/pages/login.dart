@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 50),
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 40),
                 TextFormField(
                   controller: _passwordController,
                   decoration: const InputDecoration(
@@ -102,26 +102,48 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 40),
                 ElevatedButton(
-                  onPressed: _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(50),
+                    minimumSize: Size(double.infinity, 50),
+                    side: BorderSide(color: Colors.black),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(10), // No rounded corners
+                    ),
+                    backgroundColor: Theme.of(context)
+                        .colorScheme
+                        .primary, // Background color
                   ),
-                  child: const Text('Login'),
-                ),
-                const SizedBox(height: 16),
-                TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RegisterPage(),
-                      ),
-                    );
+                    _handleLogin();
                   },
-                  child: const Text('Don\'t have an account? Sign up'),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary),
+                  ),
                 ),
+                const SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Don't have an account ?"),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterPage()));
+                        },
+                        child: Text(
+                          "Sign up",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ))
+                  ],
+                )
               ],
             ),
           ),

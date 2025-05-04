@@ -121,11 +121,11 @@ class Chart extends StatelessWidget {
     return buckets.map((bucket) {
       final value = bucket.getTotalExpence();
       return PieChartSectionData(
-          showTitle: false,
-          color: categoryColors[bucket.category],
-          value: value,
-          radius: 40,
-          borderSide: BorderSide(color: Colors.black, width: 1.2));
+        showTitle: false,
+        color: categoryColors[bucket.category],
+        value: value,
+        radius: 70,
+      );
     }).toList();
   }
 
@@ -141,7 +141,7 @@ class Chart extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -156,11 +156,12 @@ class Chart extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(width: 20),
-            SizedBox(
-              height: 225,
+            SizedBox(height: 20),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15),
               child: SingleChildScrollView(
-                child: Column(
+                scrollDirection: Axis.horizontal,
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: Category.values.map((category) {
                     return iconData(
@@ -183,13 +184,14 @@ class Chart extends StatelessWidget {
 }
 
 Widget iconData(BuildContext context, Icon icon, String label) {
-  return Column(
+  return Row(
     children: [
-      Row(
-        mainAxisSize: MainAxisSize.min,
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
         children: [
           icon,
-          SizedBox(width: 3),
+          SizedBox(height: 5),
           Text(
             label,
             style: TextStyle(
@@ -200,7 +202,7 @@ Widget iconData(BuildContext context, Icon icon, String label) {
         ],
       ),
       SizedBox(
-        height: 7,
+        width: 20,
       )
     ],
   );

@@ -95,14 +95,11 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
     String defaultDate = formater.format(DateTime.now());
     return Container(
       decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(color: Theme.of(context).focusColor, blurRadius: 50)
-          ],
           color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       width: 600,
-      height: 700,
+      height: 1000,
       padding: EdgeInsets.fromLTRB(30, 30, 30, 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,12 +173,13 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
           ),
           SizedBox(height: 10),
           Wrap(
-            spacing: 10,
+            alignment: WrapAlignment.start,
+            spacing: 15,
             children: Category.values.map((category) {
               final isSelected = _selectedCategory == category;
               return ChoiceChip(
-                showCheckmark: false,
-                checkmarkColor: Colors.white,
+                showCheckmark: true,
+                checkmarkColor: Theme.of(context).cardColor,
                 label: Text(category.name),
                 selected: isSelected,
                 onSelected: (selected) {
@@ -189,12 +187,12 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                     _selectedCategory = category;
                   });
                 },
-                selectedColor: Theme.of(context).primaryColor,
+                selectedColor: Theme.of(context).textTheme.titleMedium?.color,
                 backgroundColor: Theme.of(context).cardColor,
                 labelStyle: TextStyle(
                   color: isSelected
-                      ? Colors.white
-                      : Theme.of(context).textTheme.bodyMedium?.color,
+                      ? Theme.of(context).cardColor
+                      : Theme.of(context).textTheme.titleMedium?.color,
                 ),
               );
             }).toList(),
