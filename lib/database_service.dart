@@ -47,7 +47,7 @@ class DatabaseService {
       await db.execute('''
         CREATE TABLE users (
           user_id TEXT PRIMARY KEY,
-          username TEXT UNIQUE NOT NULL,
+          username TEXT NOT NULL,
           email TEXT UNIQUE NOT NULL,
           password_hash TEXT NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
